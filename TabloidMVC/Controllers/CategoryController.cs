@@ -25,7 +25,18 @@ namespace TabloidMVC.Controllers
         public ActionResult Index()
         {
             var cats = _categoryRepo.GetAll();
-            return View(cats);
+            int userId = GetCurrentUserId();
+
+            UserProfile user = _userRepo.GetUserById(userId);
+
+            if (user.UserType.Name.ToLower() == "admin")
+            {
+                return View(cats);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // GET: CategoryController/Details/5
@@ -95,17 +106,31 @@ namespace TabloidMVC.Controllers
         // GET: CategoryController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var cats = _categoryRepo.GetAll();
+            int userId = GetCurrentUserId();
+            Category cat = _categoryRepo.GetCategoryById(id);
+
+            UserProfile user = _userRepo.GetUserById(userId);
+
+            if (user.UserType.Name.ToLower() == "admin")
+            {
+                return View(cat);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: CategoryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Category category)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _categoryRepo.Delete(id);
+                return RedirectToAction("Index");
             }
             catch
             {
