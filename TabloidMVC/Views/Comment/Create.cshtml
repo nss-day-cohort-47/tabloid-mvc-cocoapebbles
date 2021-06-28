@@ -1,51 +1,47 @@
-@model TabloidMVC.Models.Comment
+@model TabloidMVC.Models.ViewModels.CommentViewModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
 
-<h4>Comment</h4>
-<hr />
-@*                                        888
-                                           888
-                                           888
-     .d8888b .d88b. 888d888 .d88b.  8888b. 888
-    d88P"   d8P  Y8b888P"  d8P  Y8b    "88b888
-    888     88888888888    88888888.d888888888
-    Y88b.   Y8b.    888    Y8b.    888  888888
-     "Y8888P "Y8888 888     "Y8888 "Y888888888
-*@
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input asp-for="PostId" type="hidden" class="form-control" />
-            </div>
-            <div class="form-group">
-                <input asp-for="UserProfileId" type="hidden" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Subject" class="control-label"></label>
-                <input asp-for="Subject" class="form-control" />
-                <span asp-validation-for="Subject" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <input asp-for="Content" class="form-control" />
-                <span asp-validation-for="Content" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container pt-5">
+    <h4>New Comment</h4>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="card col-md-12 col-lg-8">
+            <form class="mt-5 card-body" asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="comment.Id" class="form-control" type="hidden" />
+                <input asp-for="comment.PostId" class="form-control" type="hidden" />
+                <input asp-for="comment.UserProfileId" class="form-control" type="hidden" />
+                <div class="form-group">
+                    <label asp-for="comment.Subject" class="control-label"></label>
+                    <input asp-for="comment.Subject" class="form-control" />
+                    <span asp-validation-for="comment.Subject" class="text-danger"></span>
+
+                </div>
+                <div class="form-group">
+                    <label asp-for="comment.Content" class="control-label"></label>
+                    <textarea asp-for="comment.Content" rows="10" class="form-control comment__content-input"></textarea>
+                    <span asp-validation-for="comment.Content" class="text-danger"></span>
+
+                </div>
+                <div class="form-group">
+
+                    <input asp-for="comment.CreateDateTime" class="form-control" type="hidden" />
+
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary btn-block" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-controller="Post" asp-action="Details" asp-route-id="@Model.PostId">Back to Post</a>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
 
 @section Scripts {

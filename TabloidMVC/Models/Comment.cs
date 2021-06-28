@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace TabloidMVC.Models
 {
@@ -9,10 +7,16 @@ namespace TabloidMVC.Models
     {
         public int Id { get; set; }
         public int PostId { get; set; }
-        public Post Post { get; set; }
         public int UserProfileId { get; set; }
+        [DisplayName("Subject")]
         public string Subject { get; set; }
-        public string content { get; set; }
-        public DateTime CreateDateTime {  get; set ;}
+        [DisplayName("Content")]
+        public string Content { get; set; }
+
+        public DateTime CreateDateTime { get; set; }
+
+        public string CommentAuthor { get; set; }
+
+
     }
 }

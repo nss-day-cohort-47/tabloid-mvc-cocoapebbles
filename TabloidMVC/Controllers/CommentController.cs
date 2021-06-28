@@ -15,15 +15,35 @@ namespace TabloidMVC.Controllers
     public class CommentController : Controller
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IPostRepository _postRepository;
+        private readonly IUserProfileRepository _userProfileRepository;
 
-        public CommentController(ICommentRepository commentRepository)
+        public CommentController(ICommentRepository commentRepository, IPostRepository postRepository, IUserProfileRepository userProfileRepository)
         {
             _commentRepository = commentRepository;
+            _postRepository = postRepository;
+            _userProfileRepository = userProfileRepository;
         }
+
+
         // GET: CommentController
-        public ActionResult Index()
+
+        public ActionResult Index(int id)
         {
-            return View();
+            List<Comment> comments = _commentRepository.GetAllCommentsByPostId(id);
+            Post post = _postRepository.GetPublishedPostById(id);
+
+
+            CommentViewModel vm = new CommentViewModel()
+            {
+                comments = comments,
+                post = post,
+
+
+            };
+
+            return View("Index", vm);
+
         }
 
         // GET: CommentController/Details/5
@@ -35,85 +55,97 @@ namespace TabloidMVC.Controllers
         // GET: CommentController/Create
         public ActionResult Create(int id)
         {
-            // Need to return a view that functions as a form that allows users to fill in Comment info with
-            // PostId should be based on the post routed from
-            // UserProfileId should be based on the current user
-            Comment comment = new Comment();
-
-            comment.PostId = id;
-            comment.UserProfileId = GetCurrentUserProfileId();
-
-            return View(comment);
+            var vm = new CommentViewModel();
+            vm.post = _postRepository.GetPublishedPostById(id);
+            return View(vm);
         }
 
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Comment comment)
+        public ActionResult Create(CommentViewModel vm, int id)
         {
             try
             {
-                comment.CreateDateTime = DateAndTime.Now;
-
-                _commentRepository.Add(comment);
-
-                // Specifies the specific Action, Controller, and Route Value to return to
-                // The Route Value must be passed as an object
-                return RedirectToAction("Details", "Post", new { id = comment.PostId });
+                vm.post = _postRepository.GetPublishedPostById(id);
+                vm.comment.UserProfileId = GetCurrentUserProfileId();
+                vm.comment.CreateDateTime = DateAndTime.Now;
+                _commentRepository.AddComment(vm);
+                return RedirectToAction("Details", "Post", new { id = id });
             }
             catch
             {
-                return View();
+                return View(vm);
             }
         }
 
         // GET: CommentController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            Comment comment = _commentRepository.GetCommentById(id);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+
+            return View(comment);
         }
 
         // POST: CommentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Comment comment)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _commentRepository.EditComment(comment);
+
+                return RedirectToAction("Index", "Comment", new { id = comment.PostId });
             }
             catch
             {
-                return View();
+                return View(comment);
             }
         }
 
         // GET: CommentController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            Comment comment = _commentRepository.GetCommentById(id);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+            return View(comment);
         }
 
         // POST: CommentController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(Comment comment, int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var thisComment = _commentRepository.GetCommentById(id);
+                _commentRepository.DeleteComment(comment);
+
+                return RedirectToAction("Index", "Comment", new { id = thisComment.PostId });
             }
-            catch
+            catch (Exception)
             {
-                return View();
+                return View(comment);
             }
         }
-
-        // Allows the logged in user's Id to be used by the controller
         private int GetCurrentUserProfileId()
         {
             string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return int.Parse(id);
         }
+
+
     }
+
 }
