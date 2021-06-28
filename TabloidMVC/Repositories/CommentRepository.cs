@@ -65,7 +65,7 @@ namespace TabloidMVC.Repositories
                                         OUTPUT INSERTED.Id
                                         VALUES (@postId, @userProfileId, @subject, @content, @createDateTime )";
                     cmd.Parameters.AddWithValue("@postId", comment.post.Id);
-                    cmd.Parameters.AddWithValue("@userProfileId", comment.user.Id);
+                    cmd.Parameters.AddWithValue("@userProfileId", comment.comment.UserProfileId);
                     cmd.Parameters.AddWithValue("@subject", comment.comment.Subject);
                     cmd.Parameters.AddWithValue("@content", comment.comment.Content);
                     cmd.Parameters.AddWithValue("@createDateTime", comment.comment.CreateDateTime);

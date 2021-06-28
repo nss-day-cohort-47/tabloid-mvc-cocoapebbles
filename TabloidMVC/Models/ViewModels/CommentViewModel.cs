@@ -13,6 +13,6 @@ namespace TabloidMVC.Models.ViewModels
         public Comment comment { get; set; }
         public Post post { get; set; }
         [DisplayName("User Name")]
-        public UserProfile user { get; set; }
+        public UserProfile UserProfile { get; set; }
     }
 }

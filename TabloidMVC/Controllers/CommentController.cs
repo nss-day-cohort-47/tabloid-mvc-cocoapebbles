@@ -73,7 +73,7 @@ namespace TabloidMVC.Controllers
                 _commentRepository.AddComment(vm);
                 return RedirectToAction("Details", "Post", new { id = id });
             }
-            catch
+            catch (Exception EX)
             {
                 return View(vm);
             }
