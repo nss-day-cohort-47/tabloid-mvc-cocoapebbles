@@ -24,7 +24,7 @@ namespace TabloidMVC.Repositories
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-
+       
         public List<Tag> GetAll()
         {
             using (SqlConnection conn = Connection)

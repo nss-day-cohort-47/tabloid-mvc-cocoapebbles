@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TabloidMVC.Models;
+using System.Security.Claims;
 using TabloidMVC.Repositories;
 
 namespace TabloidMVC.Controllers
@@ -19,6 +21,7 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: TagController
+        [Authorize]
         public ActionResult Index()
         {
             List<Tag> tags = _tagRepo.GetAll();
@@ -93,6 +96,19 @@ namespace TabloidMVC.Controllers
             {
                 return View();
             }
+        }
+
+        private int GetCurrentUserId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Console.WriteLine(id);
+            return int.Parse(id);
+        }
+
+        private bool isAdmin()
+        {
+            int userId = GetCurrentUserId();
+
         }
     }
 }
