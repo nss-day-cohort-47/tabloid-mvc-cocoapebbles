@@ -1,7 +1,13 @@
 ﻿@model TabloidMVC.Models.Post
+@using TabloidMVC.Models
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = $"Post - {Model.Title}";
+}
+
+@{
+    int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 }
 
 <div class="container pt-5">

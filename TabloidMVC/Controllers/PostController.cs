@@ -79,13 +79,17 @@ namespace TabloidMVC.Controllers
         // GET
         public IActionResult Delete(int id)
         {
-            int userId = GetCurrentUserProfileId();
+               int userId = GetCurrentUserProfileId();
                Post post = _postRepository.GetPublishedPostById(id);
-            if (post.UserProfileId == userId)
+            if (post == null)
             {
-                return View(post);
+                return NotFound();
             }
-            return RedirectToAction("Index");
+            else if (post.UserProfileId == userId)
+            {
+                return Unauthorized();
+            }
+            return View(post);
         }
 
         // POST
