@@ -33,7 +33,7 @@ namespace TabloidMVC.Repositories
                               LEFT JOIN Category c ON p.CategoryId = c.id
                               LEFT JOIN UserProfile u ON p.UserProfileId = u.id
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME() AND IsDeleted = 0";
+                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME() AND p.IsDeleted = 0";
                     var reader = cmd.ExecuteReader();
 
                     var posts = new List<Post>();
@@ -71,7 +71,7 @@ namespace TabloidMVC.Repositories
                               LEFT JOIN Category c ON p.CategoryId = c.id
                               LEFT JOIN UserProfile u ON p.UserProfileId = u.id
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME() AND IsDeleted = 0
+                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME() AND p.IsDeleted = 0
                               AND p.id = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);
@@ -111,7 +111,7 @@ namespace TabloidMVC.Repositories
                               LEFT JOIN Category c ON p.CategoryId = c.id
                               LEFT JOIN UserProfile u ON p.UserProfileId = u.id
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME() AND IsDeleted = 0 AND @userId = u.id";
+                        WHERE IsApproved = 1 AND PublishDateTime < SYSDATETIME() AND p.IsDeleted = 0 AND @userId = u.id";
 
                     cmd.Parameters.AddWithValue("@userId", userProfileId);
 
@@ -151,7 +151,7 @@ namespace TabloidMVC.Repositories
                               LEFT JOIN Category c ON p.CategoryId = c.id
                               LEFT JOIN UserProfile u ON p.UserProfileId = u.id
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE p.id = @id AND p.UserProfileId = @userProfileId AND IsDeleted = 0";
+                        WHERE p.id = @id AND p.UserProfileId = @userProfileId AND p.IsDeleted = 0";
 
                     cmd.Parameters.AddWithValue("@id", id);
                     cmd.Parameters.AddWithValue("@userProfileId", userProfileId);
