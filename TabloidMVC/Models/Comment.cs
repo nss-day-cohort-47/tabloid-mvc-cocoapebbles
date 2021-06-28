@@ -7,6 +7,7 @@ namespace TabloidMVC.Models
     {
         public int Id { get; set; }
         public int PostId { get; set; }
+        [DisplayName("Author")]
         public int UserProfileId { get; set; }
         [DisplayName("Subject")]
         public string Subject { get; set; }
