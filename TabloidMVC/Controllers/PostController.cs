@@ -78,10 +78,14 @@ namespace TabloidMVC.Controllers
 
         // GET
         public IActionResult Delete(int id)
-        { 
+        {
+            int userId = GetCurrentUserProfileId();
                Post post = _postRepository.GetPublishedPostById(id);
-            return View(post);
-            
+            if (post.UserProfileId == userId)
+            {
+                return View(post);
+            }
+            return RedirectToAction("Index");
         }
 
         // POST
