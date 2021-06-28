@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TabloidMVC.Models;
 using TabloidMVC.Repositories;
@@ -11,16 +13,18 @@ namespace TabloidMVC.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _categoryRepo;
+        private readonly IUserProfileRepository _userRepo;
 
-        public CategoryController(ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepo, IUserProfileRepository userRepo)
         {
-            _categoryRepository = categoryRepository;
+            _categoryRepo = categoryRepo;
+            _userRepo = userRepo;
         }
         // GET: CategoryController
         public ActionResult Index()
         {
-            var cats = _categoryRepository.GetAll();
+            var cats = _categoryRepo.GetAll();
             return View(cats);
         }
 
@@ -31,9 +35,22 @@ namespace TabloidMVC.Controllers
         }
 
         // GET: CategoryController/Create
+        [Authorize]
         public ActionResult Create()
         {
-            return View();
+            int userId = GetCurrentUserId();
+
+            UserProfile user = _userRepo.GetUserById(userId);
+
+            if (user.UserType.Name.ToLower() == "admin")
+            {
+                return View();
+            }
+            else
+            {
+                return Unauthorized();
+            }
+
         }
 
         // POST: CategoryController/Create
@@ -43,7 +60,7 @@ namespace TabloidMVC.Controllers
         {
             try
             {
-                _categoryRepository.Add(category);
+                _categoryRepo.Add(category);
 
                 return RedirectToAction("Index");
             }
@@ -51,6 +68,7 @@ namespace TabloidMVC.Controllers
             {
                 return View(category);
             }
+            
         }
 
         // GET: CategoryController/Edit/5
@@ -93,6 +111,12 @@ namespace TabloidMVC.Controllers
             {
                 return View();
             }
+        }
+
+        private int GetCurrentUserId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
         }
     }
 }
