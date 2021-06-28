@@ -1,10 +1,13 @@
-@model TabloidMVC.Models.ViewModels.CommentCreateViewModel
+@model TabloidMVC.Models.Comment
 
 @{
     ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
+
+<h4>Comment</h4>
+<hr />
 @*                                        888
                                            888
                                            888
@@ -12,10 +15,8 @@
     d88P"   d8P  Y8b888P"  d8P  Y8b    "88b888
     888     88888888888    88888888.d888888888
     Y88b.   Y8b.    888    Y8b.    888  888888
-     "Y8888P "Y8888 888     "Y8888 "Y888888888 
+     "Y8888P "Y8888 888     "Y8888 "Y888888888
 *@
-<h4>Comment</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
@@ -24,22 +25,17 @@
                 <input asp-for="PostId" type="hidden" class="form-control" />
             </div>
             <div class="form-group">
-                <input asp-for="UserId" type="hidden" class="form-control" />
+                <input asp-for="UserProfileId" type="hidden" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Comment.Subject" class="control-label"></label>
-                <input asp-for="Comment.Subject" class="form-control" />
-                <span asp-validation-for="Comment.Subject" class="text-danger"></span>
+                <label asp-for="Subject" class="control-label"></label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Comment.Content" class="control-label"></label>
-                <input asp-for="Comment.Content" class="form-control" />
-                <span asp-validation-for="Comment.Content" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Comment.CreateDateTime" class="control-label"></label>
-                <input asp-for="Comment.CreateDateTime" class="form-control" />
-                <span asp-validation-for="Comment.CreateDateTime" class="text-danger"></span>
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -49,7 +45,7 @@
 </div>
 
 <div>
-    <a asp-controller="Post" asp-action="Index">Back to List</a>
+    <a asp-controller="Post" asp-action="Details" asp-route-id="@Model.PostId">Back to Post</a>
 </div>
 
 @section Scripts {
