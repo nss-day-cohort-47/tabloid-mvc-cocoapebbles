@@ -1,0 +1,57 @@
+@model TabloidMVC.Models.ViewModels.CommentCreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+@*                                        888
+                                           888
+                                           888
+     .d8888b .d88b. 888d888 .d88b.  8888b. 888
+    d88P"   d8P  Y8b888P"  d8P  Y8b    "88b888
+    888     88888888888    88888888.d888888888
+    Y88b.   Y8b.    888    Y8b.    888  888888
+     "Y8888P "Y8888 888     "Y8888 "Y888888888 
+*@
+<h4>Comment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="PostId" type="hidden" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input asp-for="UserId" type="hidden" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Comment.Subject" class="control-label"></label>
+                <input asp-for="Comment.Subject" class="form-control" />
+                <span asp-validation-for="Comment.Subject" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Comment.Content" class="control-label"></label>
+                <input asp-for="Comment.Content" class="form-control" />
+                <span asp-validation-for="Comment.Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Comment.CreateDateTime" class="control-label"></label>
+                <input asp-for="Comment.CreateDateTime" class="form-control" />
+                <span asp-validation-for="Comment.CreateDateTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Post" asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
