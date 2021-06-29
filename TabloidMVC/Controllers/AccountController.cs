@@ -34,20 +34,46 @@ namespace TabloidMVC.Controllers
                 return View();
             }
 
-            var claims = new List<Claim>
+            if (userProfile.UserTypeId == 1)
             {
-                new Claim(ClaimTypes.NameIdentifier, userProfile.Id.ToString()),
-                new Claim(ClaimTypes.Email, userProfile.Email),
-            };
+                    var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userProfile.Id.ToString()),
+                    new Claim(ClaimTypes.Email, userProfile.Email),
+                    new Claim(ClaimTypes.Role, "Admin"),
+                };
 
-            var claimsIdentity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsIdentity = new ClaimsIdentity(
+              claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
 
-            return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                    var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userProfile.Id.ToString()),
+                    new Claim(ClaimTypes.Email, userProfile.Email),
+                    new Claim(ClaimTypes.Role, "Author"),
+                };
+
+                var claimsIdentity = new ClaimsIdentity(
+              claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+
+                return RedirectToAction("Index", "Home");
+            }
+
+          
+
+          
         }
 
         public async Task<IActionResult> Logout()
