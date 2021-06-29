@@ -250,7 +250,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@lastName", user.LastName);
                     cmd.Parameters.AddWithValue("@displayName", user.DisplayName);
                     cmd.Parameters.AddWithValue("@email", user.Email);
-                    cmd.Parameters.AddWithValue("@imageLocation", user.ImageLocation);
+                    cmd.Parameters.AddWithValue("@ImageLocation", DbUtils.ValueOrDBNull(user.ImageLocation));
                     cmd.Parameters.AddWithValue("@userTypeId", user.UserTypeId);
 
                     cmd.ExecuteNonQuery();
