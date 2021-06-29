@@ -27,6 +27,9 @@
                 </a>
                 <a asp-controller="Comment" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-outline-primary mx-1" title="View Comments">
                     <i class="fas fa-comments"></i>
+                <a asp-controller="Post" asp-action="ViewPostTags" asp-route-id="@Model.Id" class="btn btn-outline-primary mx-1" title="Manage Tags">
+                        <i class="fas fa-tags "></i>
+                </a>
                 </a>
             </div>
         </section>
