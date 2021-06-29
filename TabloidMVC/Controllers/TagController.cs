@@ -65,7 +65,7 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Tag tag)
         {
-            int userId = GetCurrentUserId();
+           
 
             if (User.IsInRole("Admin"))
             {
@@ -131,15 +131,23 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Tag tag)
         {
-            try
+            if (User.IsInRole("Admin"))
             {
-                _tagRepo.DeleteTag(id);
-                return RedirectToAction("Index");
+                try
+                {
+                    _tagRepo.Delete(id);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(tag);
+                }
             }
-            catch
+            else
             {
-                return View();
+                return Unauthorized();
             }
+          
         }
 
         private int GetCurrentUserId()

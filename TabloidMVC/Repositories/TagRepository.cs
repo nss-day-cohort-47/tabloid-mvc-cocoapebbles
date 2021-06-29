@@ -35,6 +35,7 @@ namespace TabloidMVC.Repositories
                     cmd.CommandText = @"
                     SELECT Id, Name
                     FROM Tag
+                    WHERE Tag.IsDeleted = 0
                     ORDER BY Name
                     ";
 
@@ -110,6 +111,27 @@ namespace TabloidMVC.Repositories
                     int newlyCreatedId = (int)cmd.ExecuteScalar();
 
                     tag.Id = newlyCreatedId;
+                }
+            }
+        }
+
+        public void Delete(int tagId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    UPDATE Tag
+                    SET IsDeleted=@IsDeleted
+                    WHERE Id=@Id
+                    ";
+
+                    cmd.Parameters.AddWithValue("@IsDeleted", 1);
+                    cmd.Parameters.AddWithValue("@Id", tagId);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
