@@ -21,10 +21,53 @@ namespace TabloidMVC.Repositories
                         SELECT up.Id, up.DisplayName, up.Email, up.FirstName, up.LastName, up.ImageLocation, up.UserTypeId, ut.Name
                         FROM UserProfile up
                         LEFT JOIN UserType ut on ut.Id = up.UserTypeId
+                        WHERE isDeleted = 0
                         ORDER BY up.DisplayName
                     ";
                     var reader = cmd.ExecuteReader();
                     List<UserProfile> users = new List<UserProfile>();
+
+                    while (reader.Read())
+                    {
+                        UserProfile user = new UserProfile
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Email = reader.GetString(reader.GetOrdinal("Email")),
+                            DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            ImageLocation = DbUtils.GetNullableString(reader, "ImageLocation"),
+                            UserType = new UserType
+                            {
+                                Name = reader.GetString(reader.GetOrdinal("Name"))
+                            }
+                        };
+
+
+
+                        users.Add(user);
+                    }
+                    reader.Close();
+                    return users;
+                }
+            }
+        }
+
+        public List<UserProfile> GetDeactivated()
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT up.Id, up.DisplayName, up.Email, up.FirstName, up.LastName, up.ImageLocation, up.UserTypeId, ut.Name
+                        FROM UserProfile up
+                        LEFT JOIN UserType ut on ut.Id = up.UserTypeId
+                        WHERE up.isDeleted = 1
+                        ORDER BY up.DisplayName";
+                    var reader = cmd.ExecuteReader();
+                    List<UserProfile> deactivatedUsers = new List<UserProfile>();
 
                     while (reader.Read())
                     {
@@ -44,10 +87,10 @@ namespace TabloidMVC.Repositories
 
 
 
-                        users.Add(user);
+                        deactivatedUsers.Add(user);
                     }
                     reader.Close();
-                    return users;
+                    return deactivatedUsers;
                 }
             }
         }
@@ -65,7 +108,8 @@ namespace TabloidMVC.Repositories
                               ut.[Name] AS UserTypeName
                          FROM UserProfile u
                               LEFT JOIN UserType ut ON u.UserTypeId = ut.id
-                        WHERE email = @email";
+                        WHERE email = @email
+                        And isDeleted = 0";
                     cmd.Parameters.AddWithValue("@email", email);
 
                     UserProfile userProfile = null;
@@ -213,6 +257,74 @@ namespace TabloidMVC.Repositories
                 }
             }
         }
+
+        public void DeactivateUser(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                UPDATE UserProfile
+                                    SET
+                                        isDeleted = 1
+                                    WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void ReactivateUser(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                UPDATE UserProfile
+                                    SET
+                                        isDeleted = 0
+                                    WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public int getAdminCount()
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT Count(up.UserTypeId) as numOfAdmin
+                                        FROM UserProfile up
+                                        WHERE up.UserTypeId = 1
+                                        AND isDeleted = 0";
+
+                    var reader = cmd.ExecuteReader();
+                    int adminCount = 0;
+                    if (reader.Read())
+                    {
+                        adminCount = reader.GetInt32(reader.GetOrdinal("numOfAdmin"));
+
+                    }
+
+                    reader.Close();
+
+                    return adminCount;
+                }
+
+            }
+        }
+
+
 
     }
 }

@@ -1,37 +1,37 @@
 @model IEnumerable<TabloidMVC.Models.UserProfile>
 
-    @{
+@{
     ViewData["Title"] = "Index";
-    }
-    <div class="container">
+}
+<div class="container">
 
-        <h1>All Users</h1>
-
-
+    <h1>All Users</h1>
 
 
-        <table class="table">
-            <thead>
-                <tr>
-
-                    <th>
-                        @Html.DisplayNameFor(model => model.FullName)
-                    </th>
-
-                    <th>
-                        @Html.DisplayNameFor(model => model.DisplayName)
-                    </th>
 
 
-                    <th>
-                        @Html.DisplayNameFor(model => model.UserType.Name)
-                    </th>
+    <table class="table">
+        <thead>
+            <tr>
 
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
+                <th>
+                    @Html.DisplayNameFor(model => model.FullName)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.DisplayName)
+                </th>
+
+
+                <th>
+                    @Html.DisplayNameFor(model => model.UserType.Name)
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
             {
                 <tr>
 
@@ -54,12 +54,12 @@
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary mx-1" title="Edit">
                             <i class="fas fa-pencil-alt"></i>
                         </a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-primary mx-1" title="Delete">
+                        <a asp-action="Deactivate" asp-route-id="@item.Id" class="btn btn-outline-primary mx-1" title="Deactivate">
                             <i class="fas fa-trash"></i>
                         </a>
                     </td>
                 </tr>
             }
-            </tbody>
-        </table>
-    </div>
+        </tbody>
+    </table>
+</div>

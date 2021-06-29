@@ -23,7 +23,7 @@ namespace TabloidMVC.Controllers
             _userTypeRepository = userTypeRepository;
         }
 
-        // GET: Accounts
+
         public ActionResult Index()
         {
             List<UserProfile> users = _userProfileRepository.GetAllUsers();
@@ -62,7 +62,7 @@ namespace TabloidMVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //GET: Account/Create
+
         public ActionResult Create()
         {
             UserProfile user = new UserProfile();
@@ -70,7 +70,7 @@ namespace TabloidMVC.Controllers
 
         }
 
-        //POST: Account/Create
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(UserProfile user)
@@ -92,17 +92,36 @@ namespace TabloidMVC.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Account/Edit/5
+        public ActionResult Details(int id)
+        {
+            UserProfile userProfile = _userProfileRepository.GetById(id);
+
+            if (userProfile == null)
+            {
+                return NotFound();
+            }
+
+            return View(userProfile);
+        }
+
+
         public ActionResult Edit(int id)
         {
             UserProfile user = _userProfileRepository.GetById(id);
             List<UserType> types = _userTypeRepository.GetAllTypes();
 
+            int admins = _userProfileRepository.getAdminCount();
+
+
+
             EditUserProfileViewModel vm = new EditUserProfileViewModel()
             {
                 UserProfile = user,
-                UserTypes = types
+                UserTypes = types,
+                AdminCount = admins
+
             };
+
 
             if (vm == null)
             {
@@ -111,20 +130,78 @@ namespace TabloidMVC.Controllers
             return View(vm);
         }
 
-        // POST: Account/Edit/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, EditUserProfileViewModel vm)
         {
-            try
+
+            int getUser = GetCurrentUserId();
+            int adminCount = _userProfileRepository.getAdminCount();
+
+            if (adminCount <= 1 && getUser == id)
             {
-                _userProfileRepository.UpdateUserProfile(id, vm.UserProfile);
-                return RedirectToAction("Index");
+                vm.UserProfile.UserTypeId = 1;
+                try
+                {
+                    _userProfileRepository.UpdateUserProfile(id, vm.UserProfile);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    return View(vm);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                return View(vm);
+                try
+                {
+                    _userProfileRepository.UpdateUserProfile(id, vm.UserProfile);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    return View(vm);
+                }
             }
         }
+        private int GetCurrentUserId()
+        {
+            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(id);
+        }
+
+
+        public ActionResult Deactivate(int id)
+        {
+            UserProfile user = _userProfileRepository.GetById(id);
+            return View(user);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Deactivate(UserProfile userProfile)
+        {
+            int getUser = GetCurrentUserId();
+            int adminCount = _userProfileRepository.getAdminCount();
+            if (adminCount <= 1 && getUser == userProfile.Id)
+            {
+                return NotFound();
+            }
+            else
+            {
+                try
+                {
+                    _userProfileRepository.DeactivateUser(userProfile.Id);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    return View(userProfile);
+                }
+            }
+        }
+
     }
 }
