@@ -24,7 +24,7 @@ namespace TabloidMVC.Repositories
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-       
+
         public List<Tag> GetAll()
         {
             using (SqlConnection conn = Connection)
@@ -130,6 +130,27 @@ namespace TabloidMVC.Repositories
 
                     cmd.Parameters.AddWithValue("@IsDeleted", 1);
                     cmd.Parameters.AddWithValue("@Id", tagId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdateTag(Tag tag)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    UPDATE Tag
+                    SET [Name]=@name
+                    WHERE Id=@Id
+                    ";
+
+                    cmd.Parameters.AddWithValue("@Id", tag.Id);
+                    cmd.Parameters.AddWithValue("@name", tag.Name);
 
                     cmd.ExecuteNonQuery();
                 }

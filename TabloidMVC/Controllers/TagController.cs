@@ -85,22 +85,38 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Edit(int id)
         {
-            return View();
+            Tag tag = _tagRepo.GetTagById(id);
+            if (User.IsInRole("Admin"))
+            {
+                return View(tag);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: TagController/Edit/5
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Tag tag)
         {
-            try
+            if (User.IsInRole("Admin"))
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _tagRepo.UpdateTag(tag);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(tag);
+                }
             }
-            catch
+            else
             {
-                return View();
+                return Unauthorized();
             }
         }
 
