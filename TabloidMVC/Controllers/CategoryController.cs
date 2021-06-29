@@ -14,22 +14,17 @@ namespace TabloidMVC.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryRepository _categoryRepo;
-        private readonly IUserProfileRepository _userRepo;
 
-        public CategoryController(ICategoryRepository categoryRepo, IUserProfileRepository userRepo)
+        public CategoryController(ICategoryRepository categoryRepo)
         {
             _categoryRepo = categoryRepo;
-            _userRepo = userRepo;
         }
         // GET: CategoryController
         public ActionResult Index()
         {
             var cats = _categoryRepo.GetAll();
-            int userId = GetCurrentUserId();
 
-            UserProfile user = _userRepo.GetUserById(userId);
-
-            if (user.UserType.Name.ToLower() == "admin")
+            if (User.IsInRole("Admin"))
             {
                 return View(cats);
             }
@@ -49,11 +44,7 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            int userId = GetCurrentUserId();
-
-            UserProfile user = _userRepo.GetUserById(userId);
-
-            if (user.UserType.Name.ToLower() == "admin")
+            if (User.IsInRole("Admin"))
             {
                 return View();
             }
@@ -79,27 +70,44 @@ namespace TabloidMVC.Controllers
             {
                 return View(category);
             }
-            
+
         }
 
         // GET: CategoryController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var cat = _categoryRepo.GetCategoryById(id);
+            if (User.IsInRole("Admin"))
+            {
+                return View(cat);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: CategoryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Category category)
         {
-            try
+            if (User.IsInRole("Admin"))
             {
-                return RedirectToAction(nameof(Index));
+
+                try
+                {
+                    _categoryRepo.Update(category);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(category);
+                }
             }
-            catch
+            else
             {
-                return View();
+                return Unauthorized();
             }
         }
 
@@ -107,12 +115,9 @@ namespace TabloidMVC.Controllers
         public ActionResult Delete(int id)
         {
             var cats = _categoryRepo.GetAll();
-            int userId = GetCurrentUserId();
             Category cat = _categoryRepo.GetCategoryById(id);
 
-            UserProfile user = _userRepo.GetUserById(userId);
-
-            if (user.UserType.Name.ToLower() == "admin")
+            if (User.IsInRole("Admin"))
             {
                 return View(cat);
             }
@@ -136,12 +141,6 @@ namespace TabloidMVC.Controllers
             {
                 return View();
             }
-        }
-
-        private int GetCurrentUserId()
-        {
-            string id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return int.Parse(id);
         }
     }
 }
