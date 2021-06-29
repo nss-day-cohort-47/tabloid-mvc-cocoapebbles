@@ -108,23 +108,41 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
-            return View();
+            Tag tag = _tagRepo.GetTagById(id);
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(tag);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: TagController/Delete/5
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Tag tag)
         {
-            try
+            if (User.IsInRole("Admin"))
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _tagRepo.Delete(id);
+                    return RedirectToAction("Index");
+                }
+                catch
+                {
+                    return View(tag);
+                }
             }
-            catch
+            else
             {
-                return View();
+                return Unauthorized();
             }
+          
         }
 
         private int GetCurrentUserId()
