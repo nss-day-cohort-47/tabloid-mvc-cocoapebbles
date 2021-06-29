@@ -5,7 +5,7 @@ using TabloidMVC.Utils;
 
 namespace TabloidMVC.Repositories
 {
-    public class UserProfileRepository : BaseRepository, IDontTouchUserProfileRepository
+    public class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
 
         public UserProfileRepository(IConfiguration config) : base(config) { }
