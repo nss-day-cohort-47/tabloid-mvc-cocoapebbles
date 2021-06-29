@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using TabloidMVC.Models;
 using TabloidMVC.Models.ViewModels;
@@ -34,12 +35,15 @@ namespace TabloidMVC.Controllers
         public IActionResult ViewPostTags(int postId)
         {
             Post post = _postRepository.GetPublishedPostById(postId);
-            List<Tag> tags = _tagRepository.GetAll();
+            List<Tag> allTags = _tagRepository.GetAll();
+            List<Tag> postTags = _tagRepository.GetTagsByPostId(postId);
+
+            IEnumerable<Tag> unusedTags = allTags.Except(postTags);
 
             AddTagViewModel vm = new AddTagViewModel()
             {
                 Post = post,
-                Tags = tags
+                Tags = unusedTags
             };
 
             return View(vm);

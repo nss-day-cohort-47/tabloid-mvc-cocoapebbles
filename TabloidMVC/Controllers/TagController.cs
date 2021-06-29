@@ -108,7 +108,7 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
-            Tag tag = _tagRepo.GetTagById(id);
+            Tag tag = _tagRepo.GetTagByPostId(id);
 
             if (User.IsInRole("Admin"))
             {

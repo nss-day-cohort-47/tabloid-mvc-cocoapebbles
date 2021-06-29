@@ -8,6 +8,6 @@ namespace TabloidMVC.Models.ViewModels
     public class AddTagViewModel
     {
         public Post Post { get; set; }
-        public List<Tag> Tags { get; set; }
+        public IEnumerable<Tag> Tags { get; set; }
     }
 }

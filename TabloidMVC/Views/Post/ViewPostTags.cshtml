@@ -1,10 +1,11 @@
-﻿@model IEnumerable<TabloidMVC.Models.ViewModels.AddTagViewModel>
+﻿@model TabloidMVC.Models.ViewModels.AddTagViewModel
 
 @{
     ViewData["Title"] = "ViewPostTags";
 }
+<div class="container pt-5">
 
-<h1>ViewPostTags</h1>
+<h1>Manage Tags</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,18 +13,24 @@
 <table class="table">
     <thead>
         <tr>
-            <th></th>
+            <th>
+                <div class="form-group">
+                    <label asp-for="Post.Title" class="control-label"></label>
+                    <input asp-for="Post.Title" class="form-control" />
+                    <span asp-validation-for="Post.Title" class="text-danger"></span>
+                </div>
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model. ) {
+@foreach (var item in Model.Tags ) {
         <tr>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                <label asp-for="Tags" class="control-label">@item.Name</label>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+</div>

@@ -24,7 +24,7 @@ namespace TabloidMVC.Repositories
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-       
+
         public List<Tag> GetAll()
         {
             using (SqlConnection conn = Connection)
@@ -58,7 +58,44 @@ namespace TabloidMVC.Repositories
             }
         }
 
-        public Tag GetTagById(int id)
+        public List<Tag> GetTagsByPostId(int postId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                        SELECT t.Name, t.Id
+                                        FROM Tag t
+                                        join PostTag pt ON pt.TagId = t.Id
+                                        join Post p ON pt.PostId = p.Id
+                                        WHERE p.Id = @id;";
+
+                    cmd.Parameters.AddWithValue("@id", postId);
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<Tag> tags = new List<Tag>();
+
+                    while (reader.Read())
+                    {
+                        Tag tag = new Tag
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("Name"))
+                        };
+
+                        tags.Add(tag);
+                    }
+
+                    reader.Close();
+                    return tags;
+                }
+            }
+        }
+
+        public Tag GetTagByPostId(int id)
         {
             using (SqlConnection conn = Connection)
             {
