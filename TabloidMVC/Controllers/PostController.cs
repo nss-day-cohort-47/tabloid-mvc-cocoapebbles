@@ -85,7 +85,7 @@ namespace TabloidMVC.Controllers
             {
                 return NotFound();
             }
-            else if (post.UserProfileId == userId)
+            else if (post.UserProfileId != userId)
             {
                 return Unauthorized();
             }
