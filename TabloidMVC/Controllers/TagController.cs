@@ -27,10 +27,8 @@ namespace TabloidMVC.Controllers
         public ActionResult Index()
         {
             List<Tag> tags = _tagRepo.GetAll();
-            int userId = GetCurrentUserId();
-            UserProfile user = _userRepo.GetUserById(userId);
 
-            if (user.UserTypeId == 1)
+            if (User.IsInRole("Admin"))
             {
                 return View(tags);
             }
@@ -41,46 +39,46 @@ namespace TabloidMVC.Controllers
            
         }
 
-        //// GET: TagController/Details/5
-        //[Authorize]
-        //public ActionResult Details(int id)
-        //{
-        //    int userId = GetCurrentUserId();
-        //    UserProfile user = _userRepo.GetUserById(userId);
-
-        //    Tag tag = _tagRepo.GetTagById(id);
-
-        //    if (user.UserTypeId == 1)
-        //    {
-        //        return View();
-        //    }
-        //    else
-        //    {
-        //        return Unauthorized();
-        //    }
-        //}
 
         // GET: TagController/Create
         [Authorize]
         public ActionResult Create()
         {
-            return View();
+
+            if (User.IsInRole("Admin"))
+            {
+                return View();
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: TagController/Create
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Tag tag)
         {
-            try
+
+            if (User.IsInRole("Admin"))
             {
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _tagRepo.AddTag(tag);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    return View(tag);
+                }
             }
-            catch
+            else
             {
-                return View();
+                return Unauthorized();
             }
+           
         }
 
         // GET: TagController/Edit/5
