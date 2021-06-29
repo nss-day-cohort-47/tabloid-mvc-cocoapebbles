@@ -192,7 +192,7 @@ namespace TabloidMVC.Repositories
                     cmd.Parameters.AddWithValue("@ImageLocation", DbUtils.ValueOrDBNull(post.ImageLocation));
                     cmd.Parameters.AddWithValue("@CreateDateTime", post.CreateDateTime);
                     cmd.Parameters.AddWithValue("@PublishDateTime", DbUtils.ValueOrDBNull(post.PublishDateTime));
-                    cmd.Parameters.AddWithValue("@IsApproved", post.IsApproved);
+                    cmd.Parameters.AddWithValue("@IsApproved", true);
                     cmd.Parameters.AddWithValue("@CategoryId", post.CategoryId);
                     cmd.Parameters.AddWithValue("@UserProfileId", post.UserProfileId);
                     cmd.Parameters.AddWithValue("@IsDeleted", 0);
@@ -212,6 +212,42 @@ namespace TabloidMVC.Repositories
                     cmd.CommandText = @"UPDATE Post SET IsDeleted=@IsDeleted WHERE Id=@Id";
                     cmd.Parameters.AddWithValue("@IsDeleted", 1);
                     cmd.Parameters.AddWithValue("@Id", postId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdatePost(Post post)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                        UPDATE Post
+                                        SET 
+                                           Title = @title,
+                                           Content = @content,
+                                           ImageLocation = @imageLocation,
+                                           CategoryId = @categoryId,
+                                           CreateDateTime = @createDateTime,
+                                           PublishDateTime = @publishDateTime,
+                                           IsApproved = @isApproved,
+                                           UserProfileId = @userProfileId,
+                                           IsDeleted = @isDeleted
+                                        WHERE Id = @id";
+                    cmd.Parameters.AddWithValue("@title", post.Title);
+                    cmd.Parameters.AddWithValue("@content", post.Content);
+                    cmd.Parameters.AddWithValue("@imageLocation", post.ImageLocation);
+                    cmd.Parameters.AddWithValue("@categoryId", post.CategoryId);
+                    cmd.Parameters.AddWithValue("@createDateTime", post.CreateDateTime);
+                    cmd.Parameters.AddWithValue("@publishDateTime", post.PublishDateTime);
+                    cmd.Parameters.AddWithValue("@isApproved", true);
+                    cmd.Parameters.AddWithValue("@userProfileId", post.UserProfileId);
+                    cmd.Parameters.AddWithValue("@isDeleted", 0);
+                    cmd.Parameters.AddWithValue("@id", post.Id);
 
                     cmd.ExecuteNonQuery();
                 }
