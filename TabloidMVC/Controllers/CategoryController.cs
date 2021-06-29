@@ -4,94 +4,80 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TabloidMVC.Models;
-using System.Security.Claims;
 using TabloidMVC.Repositories;
 
 namespace TabloidMVC.Controllers
 {
-    public class TagController : Controller
+    public class CategoryController : Controller
     {
-        private readonly ITagRepository _tagRepo;
+        private readonly ICategoryRepository _categoryRepo;
         private readonly IUserProfileRepository _userRepo;
 
-        public TagController(ITagRepository tagRepository, IUserProfileRepository userRepo)
+        public CategoryController(ICategoryRepository categoryRepo, IUserProfileRepository userRepo)
         {
-            _tagRepo = tagRepository;
+            _categoryRepo = categoryRepo;
             _userRepo = userRepo;
         }
-
-        // GET: TagController
-        [Authorize]
+        // GET: CategoryController
         public ActionResult Index()
         {
-            List<Tag> tags = _tagRepo.GetAll();
+            var cats = _categoryRepo.GetAll();
+            return View(cats);
+        }
+
+        // GET: CategoryController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: CategoryController/Create
+        [Authorize]
+        public ActionResult Create()
+        {
             int userId = GetCurrentUserId();
+
             UserProfile user = _userRepo.GetUserById(userId);
 
-            if (user.UserTypeId == 1)
+            if (user.UserType.Name.ToLower() == "admin")
             {
-                return View(tags);
+                return View();
             }
             else
             {
                 return Unauthorized();
             }
-           
+
         }
 
-        //// GET: TagController/Details/5
-        //[Authorize]
-        //public ActionResult Details(int id)
-        //{
-        //    int userId = GetCurrentUserId();
-        //    UserProfile user = _userRepo.GetUserById(userId);
-
-        //    Tag tag = _tagRepo.GetTagById(id);
-
-        //    if (user.UserTypeId == 1)
-        //    {
-        //        return View();
-        //    }
-        //    else
-        //    {
-        //        return Unauthorized();
-        //    }
-        //}
-
-        // GET: TagController/Create
-        [Authorize]
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: TagController/Create
-        [Authorize]
+        // POST: CategoryController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Category category)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _categoryRepo.Add(category);
+
+                return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                return View(category);
             }
+            
         }
 
-        // GET: TagController/Edit/5
-        [Authorize]
+        // GET: CategoryController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: TagController/Edit/5
-        [Authorize]
+        // POST: CategoryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -106,15 +92,13 @@ namespace TabloidMVC.Controllers
             }
         }
 
-        // GET: TagController/Delete/5
-        [Authorize]
+        // GET: CategoryController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: TagController/Delete/5
-        [Authorize]
+        // POST: CategoryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
