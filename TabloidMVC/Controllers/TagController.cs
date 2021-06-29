@@ -66,9 +66,8 @@ namespace TabloidMVC.Controllers
         public ActionResult Create(Tag tag)
         {
             int userId = GetCurrentUserId();
-            UserProfile user = _userRepo.GetUserById(userId);
 
-            if (user.UserTypeId == 1)
+            if (User.IsInRole("Admin"))
             {
                 try
                 {
@@ -114,18 +113,28 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
-            return View();
+            Tag tag = _tagRepo.GetTagById(id);
+
+            if (User.IsInRole("Admin"))
+            {
+                return View(tag);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
         // POST: TagController/Delete/5
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Tag tag)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _tagRepo.DeleteTag(id);
+                return RedirectToAction("Index");
             }
             catch
             {
