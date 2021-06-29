@@ -27,10 +27,8 @@ namespace TabloidMVC.Controllers
         public ActionResult Index()
         {
             List<Tag> tags = _tagRepo.GetAll();
-            int userId = GetCurrentUserId();
-            UserProfile user = _userRepo.GetUserById(userId);
 
-            if (user.UserTypeId == 1)
+            if (User.IsInRole("Admin"))
             {
                 return View(tags);
             }
@@ -46,10 +44,8 @@ namespace TabloidMVC.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            int userId = GetCurrentUserId();
-            UserProfile user = _userRepo.GetUserById(userId);
 
-            if (user.UserTypeId == 1)
+            if (User.IsInRole("Admin"))
             {
                 return View();
             }
@@ -65,7 +61,6 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Tag tag)
         {
-           
 
             if (User.IsInRole("Admin"))
             {

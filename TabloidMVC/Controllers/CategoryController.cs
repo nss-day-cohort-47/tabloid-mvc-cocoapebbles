@@ -130,12 +130,11 @@ namespace TabloidMVC.Controllers
         // POST: CategoryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Category category)
+        public ActionResult Delete(int id, IFormCollection collection)
         {
             try
             {
-                _categoryRepo.Delete(id);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
