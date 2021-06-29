@@ -36,7 +36,7 @@ namespace TabloidMVC.Repositories
                             DisplayName = reader.GetString(reader.GetOrdinal("DisplayName")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            ImageLocation = reader.IsDBNull(reader.GetOrdinal("ImageLocation")) ? "No Image" : reader.GetString(reader.GetOrdinal("ImageLocation")),
+                            ImageLocation = DbUtils.GetNullableString(reader, "ImageLocation"),
                             UserType = new UserType
                             {
                                 Name = reader.GetString(reader.GetOrdinal("Name"))
