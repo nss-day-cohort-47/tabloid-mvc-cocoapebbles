@@ -14,5 +14,6 @@ namespace TabloidMVC.Repositories
         Post GetPublishedPostById(int id);
         Post GetUserPostById(int id, int userProfileId);
         PostManageTagsViewModel GetUserPostByIdAndTags(int id);
+        public List<Post> GetAllSubscribedPosts(int userProfileId);
     }
 }
