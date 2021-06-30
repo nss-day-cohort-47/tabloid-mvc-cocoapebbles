@@ -1,159 +1,184 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using TabloidMVC.Models;
+
 
 namespace TabloidMVC.Repositories
 {
-    public class TagRepository : ITagRepository
+    public class TagRepository : BaseRepository, ITagRepository
     {
-        private readonly IConfiguration _config;
-
-        public TagRepository(IConfiguration config)
-        {
-            _config = config;
-        }
-
-        public SqlConnection Connection
-        {
-            get
-            {
-                return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            }
-        }
+        public TagRepository(IConfiguration config) : base(config) { }
 
         public List<Tag> GetAll()
         {
-            using (SqlConnection conn = Connection)
+            using (var conn = Connection)
             {
                 conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"
-                    SELECT Id, Name
-                    FROM Tag
-                    WHERE Tag.IsDeleted = 0
-                    ORDER BY Name
-                    ";
+                    cmd.CommandText = "SELECT id, name FROM Tag Where IsDeleted = 0";
+                    var reader = cmd.ExecuteReader();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    List<Tag> tags = new List<Tag>();
+                    var tags = new List<Tag>();
+
                     while (reader.Read())
                     {
-                        Tag tag = new Tag
+                        tags.Add(new Tag()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name"))
-                        };
-
-                        tags.Add(tag);
+                            Name = reader.GetString(reader.GetOrdinal("name")),
+                        });
                     }
 
                     reader.Close();
+
                     return tags;
                 }
             }
         }
 
-        public Tag GetTagById(int id)
+        public List<Tag> GetAllByPost(int postId)
         {
-            using (SqlConnection conn = Connection)
+            using (var conn = Connection)
             {
                 conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"
-                        SELECT Id, Name
-                        FROM Tag
-                        WHERE Id = @id
-                    ";
+                    cmd.CommandText = @"SELECT t.id, t.name FROM Tag t 
+                                        Join PostTag pt on t.id = pt.TagId 
+                                        Where pt.PostId = @postId And t.IsDeleted = 0";
+                    cmd.Parameters.AddWithValue("@postId", postId);
+                    var reader = cmd.ExecuteReader();
 
-                    cmd.Parameters.AddWithValue("@id", id);
+                    var tags = new List<Tag>();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        Tag tag = new Tag
+                        tags.Add(new Tag()
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name"))
-                        };
-                        reader.Close();
-                        return tag;
+                            Name = reader.GetString(reader.GetOrdinal("name")),
+                        });
                     }
 
                     reader.Close();
-                    return null;
 
+                    return tags;
                 }
             }
         }
 
-        public void AddTag(Tag tag)
+        public void DeletePostTag(int id, int postId)
         {
-            using (SqlConnection conn = Connection)
+            using (var conn = Connection)
             {
                 conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"
-                    INSERT INTO Tag ([Name])
-                    OUTPUT INSERTED.ID
-                    VALUES (@name);
-                    ";
-
-                    cmd.Parameters.AddWithValue("@name", tag.Name);
-
-                    int newlyCreatedId = (int)cmd.ExecuteScalar();
-
-                    tag.Id = newlyCreatedId;
-                }
-            }
-        }
-
-        public void Delete(int tagId)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"
-                    UPDATE Tag
-                    SET IsDeleted=@IsDeleted
-                    WHERE Id=@Id
-                    ";
-
-                    cmd.Parameters.AddWithValue("@IsDeleted", 1);
-                    cmd.Parameters.AddWithValue("@Id", tagId);
-
+                    cmd.CommandText = @"Delete From PostTag 
+                                        where TagId = @id And PostId = @postId";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@postId", postId);
                     cmd.ExecuteNonQuery();
                 }
+                conn.Close();
             }
         }
 
-        public void UpdateTag(Tag tag)
+        public void AddPostTag(int id, int postId)
         {
-            using (SqlConnection conn = Connection)
+            using (var conn = Connection)
             {
                 conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"
-                    UPDATE Tag
-                    SET [Name]=@name
-                    WHERE Id=@Id
-                    ";
+                    cmd.CommandText = "Select count(Id) From PostTag Where TagId=@id And PostId=@postId";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@postId", postId);
+                    var tags = cmd.ExecuteScalar();
+                    if (Convert.ToInt32(tags) == 0)
+                    {
+                        cmd.CommandText = @"Insert Into PostTag(TagId, PostId) 
+                                        Values(@id, @postId)";
+                        cmd.ExecuteNonQuery();
+                    }
 
-                    cmd.Parameters.AddWithValue("@Id", tag.Id);
-                    cmd.Parameters.AddWithValue("@name", tag.Name);
+                }
+                conn.Close();
+            }
+        }
 
+
+        public void Delete(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "Update Tag set IsDeleted = 1 where Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
                     cmd.ExecuteNonQuery();
                 }
+                conn.Close();
+            }
+        }
+
+        public void Edit(Tag toEdit)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "Update Tag set Name = @name where Id = @id";
+                    cmd.Parameters.AddWithValue("@name", toEdit.Name);
+                    cmd.Parameters.AddWithValue("@id", toEdit.Id);
+                    cmd.ExecuteNonQuery();
+                }
+                conn.Close();
+            }
+        }
+
+
+        public Tag GetTagById(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT id, name FROM Tag Where IsDeleted = 0 And Id = @id";
+                    cmd.Parameters.AddWithValue("@id", id);
+                    var reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        return new Tag()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Name = reader.GetString(reader.GetOrdinal("name")),
+                        };
+                    }
+
+                    reader.Close();
+                }
+                return null;
+            }
+        }
+        public int Add(Tag add)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "Insert Into Tag(Name) OUTPUT INSERTED.ID Values(@name)";
+                    cmd.Parameters.AddWithValue("@name", add.Name);
+                    add.Id = (int)cmd.ExecuteScalar();
+                }
+                conn.Close();
+                return add.Id;
             }
         }
     }

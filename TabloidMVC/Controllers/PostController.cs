@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -16,11 +15,13 @@ namespace TabloidMVC.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public PostController(IPostRepository postRepository, ICategoryRepository categoryRepository)
+        public PostController(IPostRepository postRepository, ICategoryRepository categoryRepository, ITagRepository tagRepository)
         {
             _postRepository = postRepository;
             _categoryRepository = categoryRepository;
+            _tagRepository = tagRepository;
         }
 
         public IActionResult Index()
@@ -49,7 +50,40 @@ namespace TabloidMVC.Controllers
             }
             return View(post);
         }
+        public IActionResult ManageTags(int id)
+        {
+            PostManageTagsViewModel vm = _postRepository.GetUserPostByIdAndTags(id);
+            vm.PostTags = _tagRepository.GetAllByPost(id);
+            return View(vm);
+        }
 
+        public IActionResult AddPostTag(int postId)
+        {
+            List<Tag> tags = _tagRepository.GetAll();
+            PostManageTagsViewModel vm = new();
+            vm.PostId = postId;
+            vm.PostTags = tags;
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult AddPostTag(PostManageTagsViewModel vm)
+        {
+            try
+            {
+                _tagRepository.AddPostTag(vm.TagId, vm.PostId);
+                return RedirectToAction("ManageTags", new { id = vm.PostId });
+            }
+            catch
+            {
+                return RedirectToAction("ManageTags", new { id = vm.PostId });
+            }
+        }
+        public IActionResult DeletePostTag(int Id, int PostId)
+        {
+            _tagRepository.DeletePostTag(Id, PostId);
+            return RedirectToAction("ManageTags", new { id = PostId });
+        }
         public IActionResult Create()
         {
             var vm = new PostCreateViewModel();
