@@ -29,6 +29,7 @@ namespace TabloidMVC.Controllers
             List<UserProfile> users = _userProfileRepository.GetAllUsers();
             return View(users);
         }
+
         public IActionResult Login()
         {
             return View();
@@ -177,7 +178,12 @@ namespace TabloidMVC.Controllers
             UserProfile user = _userProfileRepository.GetById(id);
             return View(user);
         }
-
+        
+        public ActionResult DeactivatedIndex()
+        {
+            List<UserProfile> deactivatedusers = _userProfileRepository.GetDeactivated();
+            return View(deactivatedusers);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -201,6 +207,28 @@ namespace TabloidMVC.Controllers
                     return View(userProfile);
                 }
             }
+        }
+        public ActionResult Reactivate(int id)
+        {
+            UserProfile user = _userProfileRepository.GetById(id);
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reactivate(UserProfile userProfile)
+        {
+
+            try
+            {
+                _userProfileRepository.ReactivateUser(userProfile.Id);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(userProfile);
+            }
+
         }
 
     }
