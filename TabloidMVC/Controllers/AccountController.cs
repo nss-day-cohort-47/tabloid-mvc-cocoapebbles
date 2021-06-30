@@ -29,6 +29,7 @@ namespace TabloidMVC.Controllers
             List<UserProfile> users = _userProfileRepository.GetAllUsers();
             return View(users);
         }
+
         public IActionResult Login()
         {
             return View();
