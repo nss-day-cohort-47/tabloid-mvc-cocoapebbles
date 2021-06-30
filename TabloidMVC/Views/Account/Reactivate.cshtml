@@ -53,8 +53,15 @@
                 @Html.DisplayNameFor(model => model.ImageLocation)
             </dt>
             <dd class="col-sm-10">
-                <img src="@Model.ImageLocation" class=" img-thumbnail img-fluid" style="height: 200px; width: 200px" alt="@Model.FullName image" />
 
+                @if (string.IsNullOrWhiteSpace(Model.ImageLocation))
+                {
+                    <img src="https://pbs.twimg.com/media/DTh3HZ7W4AAJLFG.jpg" class="img-thumbnail" style="height: auto" alt="Generic Profile Picture Icon" />
+                }
+                else
+                {
+                    <img src="@Model.ImageLocation" class="img-thumbnail" style="height: auto" alt="@Model.FullName image" />
+                }
             </dd>
 
 

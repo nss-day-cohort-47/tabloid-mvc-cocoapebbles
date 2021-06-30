@@ -209,7 +209,6 @@ namespace TabloidMVC.Controllers
             return View(user);
         }
 
-        //POST: Account/Deactivate/id
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Reactivate(UserProfile userProfile)
