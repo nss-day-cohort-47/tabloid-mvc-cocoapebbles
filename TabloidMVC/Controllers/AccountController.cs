@@ -178,7 +178,12 @@ namespace TabloidMVC.Controllers
             UserProfile user = _userProfileRepository.GetById(id);
             return View(user);
         }
-
+        
+        public ActionResult DeactivatedIndex()
+        {
+            List<UserProfile> deactivatedusers = _userProfileRepository.GetDeactivated();
+            return View(deactivatedusers);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
