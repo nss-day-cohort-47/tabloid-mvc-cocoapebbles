@@ -133,11 +133,13 @@ namespace TabloidMVC.Controllers
             {
                 return NotFound();
             }
-            else if (post.UserProfileId != userId)
+            else if (post.UserProfileId == userId || User.IsInRole("Admin"))
             {
-                return Unauthorized();
+                return View(post);
             }
-            return View(post);
+            else return Unauthorized();
+
+
         }
 
         // POST
