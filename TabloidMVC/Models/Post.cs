@@ -17,6 +17,8 @@ namespace TabloidMVC.Models
         [DisplayName("Header Image URL")]
         public string ImageLocation { get; set; }
 
+        [DisplayName("Date of Creation")]
+
         public DateTime CreateDateTime { get; set; }
 
         [DisplayName("Published")]
@@ -30,8 +32,8 @@ namespace TabloidMVC.Models
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
-        [DisplayName("Author")]
         public int UserProfileId { get; set; }
+        [DisplayName("Author")]
         public UserProfile UserProfile { get; set; }
 
         public bool isOwner { get; set; }
