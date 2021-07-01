@@ -3,9 +3,7 @@
 @{
     ViewData["Title"] = "Edit";
 }
-<div class="container">
-
-
+<div class="container pt-5">
     <h1>Edit</h1>
 
     <h4>User Profile</h4>
@@ -46,9 +44,9 @@
                     <select asp-for="UserProfile.UserTypeId" class="form-control">
                         <option value="">Select Role</option>
                         @foreach (UserType role in Model.UserTypes)
-                    {
-                        <option value="@role.Id">@role.Name</option>
-                    }
+                        {
+                            <option value="@role.Id">@role.Name</option>
+                        }
                     </select>
                     <span asp-validation-for="UserProfile.UserTypeId" class="text-danger"></span>
                 </div>
