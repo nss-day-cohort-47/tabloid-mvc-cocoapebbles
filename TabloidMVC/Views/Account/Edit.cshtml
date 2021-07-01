@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <label asp-for="UserProfile.UserTypeId" class="control-label"></label>
                     <select asp-for="UserProfile.UserTypeId" class="form-control">
-                        <option value="">Select Role</option>
+                        <option value="">Select Rank</option>
                         @foreach (UserType role in Model.UserTypes)
                         {
                             <option value="@role.Id">@role.Name</option>
@@ -59,7 +59,7 @@
     </div>
 
     <div>
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index">Back</a>
     </div>
 
 </div>

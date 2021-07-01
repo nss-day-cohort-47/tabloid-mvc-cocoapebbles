@@ -44,7 +44,7 @@
                 @Html.DisplayFor(model => model.CreateDateTime)
             </dd>
             <dt class="col-sm-2">
-                User Role
+                User Rank
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.UserType.Name)
@@ -60,7 +60,7 @@
                 }
                 else
                 {
-                    <img src="@Model.ImageLocation" class="img-thumbnail" style="height: auto" alt="@Model.FullName image" />
+                    <img src="@Model.ImageLocation" class="img-thumbnail" alt="@Model.FullName image" />
                 }
             </dd>
 
