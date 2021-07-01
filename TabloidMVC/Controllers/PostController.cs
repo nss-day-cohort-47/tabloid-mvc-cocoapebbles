@@ -26,7 +26,20 @@ namespace TabloidMVC.Controllers
 
         public IActionResult Index()
         {
+            int userId = GetCurrentUserProfileId();
             var posts = _postRepository.GetAllPublishedPosts();
+            foreach(Post post in posts)
+            {
+                if (post.UserProfileId==userId)
+                {
+                    post.isOwner = true;
+                }
+                else
+                {
+                    post.isOwner = false;
+                }
+            }
+               
             return View(posts);
         }
         public IActionResult MyPosts()
@@ -153,24 +166,33 @@ namespace TabloidMVC.Controllers
                 Post = post,
                 CategoryOptions = categories
             };
-
-            return View(pcvm);
+            int UserID = GetCurrentUserProfileId();
+            if (User.IsInRole("Admin") | post.UserProfileId == UserID)
+            {
+                return View(pcvm);
+            }
+            else return Unauthorized();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Post post)
         {
-            try
+            int UserID = GetCurrentUserProfileId();
+            if (User.IsInRole("Admin") | post.UserProfileId == UserID)
             {
-                _postRepository.UpdatePost(post);
+                try
+                {
+                    _postRepository.UpdatePost(post);
 
-                return RedirectToAction("Details", new { id = id });
+                    return RedirectToAction("Details", new { id = id });
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Details", new { id = id });
+                }
             }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Details", new { id = id });
-            }
+            else return Unauthorized();
         }
         private int GetCurrentUserProfileId()
         {
