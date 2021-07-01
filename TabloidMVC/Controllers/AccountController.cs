@@ -175,8 +175,18 @@ namespace TabloidMVC.Controllers
 
         public ActionResult Deactivate(int id)
         {
+            int userId = GetCurrentUserId();
+            UserProfile CurrentUser = _userProfileRepository.GetById(userId);
             UserProfile user = _userProfileRepository.GetById(id);
-            return View(user);
+            if (CurrentUser.UserTypeId== 1)
+            {
+                return View(user);
+            }
+            else
+            {
+                return Unauthorized();
+            }
+            
         }
         
         public ActionResult DeactivatedIndex()
@@ -218,16 +228,21 @@ namespace TabloidMVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Reactivate(UserProfile userProfile)
         {
-
-            try
+            int userId = GetCurrentUserId();
+            UserProfile CurrentUser = _userProfileRepository.GetById(userId);
+            if (CurrentUser.UserTypeId == 1)
             {
-                _userProfileRepository.ReactivateUser(userProfile.Id);
-                return RedirectToAction("Index");
+                try
+                {
+                    _userProfileRepository.ReactivateUser(userProfile.Id);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    return View(userProfile);
+                }
             }
-            catch (Exception ex)
-            {
-                return View(userProfile);
-            }
+            else return Unauthorized();
 
         }
 
