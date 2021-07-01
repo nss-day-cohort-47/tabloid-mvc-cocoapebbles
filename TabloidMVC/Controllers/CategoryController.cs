@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using TabloidMVC.Models;
 using TabloidMVC.Repositories;
 
@@ -58,6 +52,7 @@ namespace TabloidMVC.Controllers
         // POST: CategoryController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Create(Category category)
         {
             try
@@ -90,6 +85,7 @@ namespace TabloidMVC.Controllers
         // POST: CategoryController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Edit(Category category)
         {
             if (User.IsInRole("Admin"))
@@ -130,6 +126,7 @@ namespace TabloidMVC.Controllers
         // POST: CategoryController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Delete(int id, Category category)
         {
             try
