@@ -15,7 +15,9 @@ namespace TabloidMVC.Repositories
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT id, name FROM Category ORDER BY Name ASC";
+                    cmd.CommandText = @"SELECT id, name FROM Category 
+                                        WHERE isDeleted = 0 
+                                        ORDER BY Name ASC ";
                     var reader = cmd.ExecuteReader();
 
                     var categories = new List<Category>();
@@ -43,7 +45,7 @@ namespace TabloidMVC.Repositories
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT id, name FROM Category WHERE id = @id";
+                    cmd.CommandText = "SELECT id, name FROM Category WHERE id = @id AND isDeleted = 0";
                     cmd.Parameters.AddWithValue("@id", id);
 
                     var reader = cmd.ExecuteReader();
@@ -94,8 +96,7 @@ namespace TabloidMVC.Repositories
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                            DELETE FROM Category
-                            WHERE Id = @id
+                            UPDATE Category SET IsDeleted = 1 WHERE Id = @Id
                         ";
 
                     cmd.Parameters.AddWithValue("@id", id);
